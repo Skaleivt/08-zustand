@@ -12,8 +12,6 @@ import { showErrorToast } from "@/components/ShowErrorToast/ShowErrorToast";
 import NoteList from "@/components/NoteList/NoteList";
 import Pagination from "@/components/Pagination/Pagination";
 import SearchBox from "@/components/SearchBox/SearchBox";
-import CreateModal from "@/components/Modal/Modal";
-import NoteForm from "@/components/NoteForm/NoteForm";
 import type { NoteSearchResponse } from "@/lib/api";
 import Loader from "@/components/Loader/Loader";
 
@@ -92,14 +90,6 @@ export default function NotesClient({ initialData, tag }: NoteClientProps) {
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />
-        )}
-        <button onClick={() => setModalOpen(true)} className={css.button}>
-          Create note +
-        </button>
-        {isModalOpen && (
-          <CreateModal onClose={() => setModalOpen(false)}>
-            <NoteForm onCancel={() => setModalOpen(false)} />
-          </CreateModal>
         )}
       </header>
       {loadingContent}

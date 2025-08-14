@@ -10,13 +10,18 @@ import { useNoteDraftStore } from "@/lib/store/noteStore";
 export default function NoteForm() {
   const queryClient = useQueryClient();
 
+  const router = useRouter();
+  const close = () => router.back();
+
   const { draft, setDraft, clearDraft } = useNoteDraftStore();
 
   const { mutate } = useMutation({
     mutationFn: (newNote: NewNote) => createNote(newNote),
     onSuccess: () => {
+      useNoteDraftStore.getState().setNoteJustCreated(true);
       clearDraft();
       queryClient.invalidateQueries({ queryKey: ["notes"] });
+      close();
     },
     onError: () => {
       showErrorToast("Error creating note");
@@ -47,9 +52,6 @@ export default function NoteForm() {
     e.currentTarget.reset();
   };
 
-  const router = useRouter();
-  const close = () => router.back();
-
   return (
     <form onSubmit={handleSubmit} className={css.form}>
       <div className={css.formGroup}>
@@ -59,7 +61,7 @@ export default function NoteForm() {
           name="title"
           type="text"
           className={css.input}
-          defaultValue={draft?.title}
+          value={draft.title}
           onChange={handleChange}
         />
       </div>
@@ -71,7 +73,7 @@ export default function NoteForm() {
           name="content"
           rows={8}
           className={css.textarea}
-          defaultValue={draft?.content}
+          value={draft.content}
           onChange={handleChange}
         />
       </div>
@@ -82,7 +84,7 @@ export default function NoteForm() {
           id="tag"
           name="tag"
           className={css.select}
-          defaultValue={draft?.tag}
+          value={draft.tag}
           onChange={handleChange}
         >
           <option value="Todo">Todo</option>
@@ -97,7 +99,7 @@ export default function NoteForm() {
         <button type="button" className={css.cancelButton} onClick={close}>
           Cancel
         </button>
-        <button type="submit" className={css.submitButton} onClick={close}>
+        <button type="submit" className={css.submitButton}>
           Create note
         </button>
       </div>

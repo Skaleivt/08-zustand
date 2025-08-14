@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
+import { ToastContainer } from "react-toastify";
 
 import "./globals.css";
 import Header from "@/components/Header/Header";
@@ -49,6 +50,7 @@ export default function RootLayout({
           {modal}
           <div id="modal-root"></div>
           <Footer />
+          <ToastContainer />
         </TanStackProvider>
       </body>
     </html>

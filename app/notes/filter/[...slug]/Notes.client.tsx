@@ -3,11 +3,11 @@
 import css from "./Notes.client.module.css";
 import { useState, useEffect, useRef } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { ToastContainer } from "react-toastify";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-
+import Link from "next/link";
 import { fetchNotes } from "@/lib/api";
 import { showErrorToast } from "@/components/ShowErrorToast/ShowErrorToast";
+import { useNoteDraftStore } from "@/lib/store/noteStore";
 
 import NoteList from "@/components/NoteList/NoteList";
 import Pagination from "@/components/Pagination/Pagination";
@@ -24,7 +24,6 @@ export default function NotesClient({ initialData, tag }: NoteClientProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [inputValue, setInputValue] = useState("");
-  const [isModalOpen, setModalOpen] = useState(false);
 
   const updateSearchQuery = useDebouncedCallback((value: string) => {
     setSearchQuery(value);
@@ -59,6 +58,8 @@ export default function NotesClient({ initialData, tag }: NoteClientProps) {
 
   const loadingContent = isLoading && <Loader />;
 
+  const { noteJustCreated, setNoteJustCreated } = useNoteDraftStore();
+
   useEffect(() => {
     if (isError) {
       showErrorToast("Something went wrong while fetching notes.");
@@ -66,7 +67,7 @@ export default function NotesClient({ initialData, tag }: NoteClientProps) {
   }, [isError]);
 
   useEffect(() => {
-    if (!isLoading && data && data.notes.length === 0) {
+    if (!isLoading && data && data.notes.length === 0 && !noteJustCreated) {
       if (!noNotesToastShown.current) {
         showErrorToast("No notes found for your request.");
         noNotesToastShown.current = true;
@@ -74,11 +75,10 @@ export default function NotesClient({ initialData, tag }: NoteClientProps) {
     } else {
       noNotesToastShown.current = false;
     }
-  }, [data, isLoading]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, tag]);
+    if (noteJustCreated) {
+      setNoteJustCreated(false);
+    }
+  }, [data, isLoading, noteJustCreated]);
 
   return (
     <div className={css.app}>
@@ -91,10 +91,12 @@ export default function NotesClient({ initialData, tag }: NoteClientProps) {
             onPageChange={setCurrentPage}
           />
         )}
+        <Link className={css.button} href="/notes/action/create">
+          Create note
+        </Link>
       </header>
       {loadingContent}
       {successContent}
-      <ToastContainer />
     </div>
   );
 }

@@ -18,7 +18,6 @@ export default function NoteForm() {
   const { mutate } = useMutation({
     mutationFn: (newNote: NewNote) => createNote(newNote),
     onSuccess: () => {
-      useNoteDraftStore.getState().setNoteJustCreated(true);
       clearDraft();
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       close();

@@ -58,8 +58,6 @@ export default function NotesClient({ initialData, tag }: NoteClientProps) {
 
   const loadingContent = isLoading && <Loader />;
 
-  const { noteJustCreated, setNoteJustCreated } = useNoteDraftStore();
-
   useEffect(() => {
     if (isError) {
       showErrorToast("Something went wrong while fetching notes.");
@@ -67,7 +65,7 @@ export default function NotesClient({ initialData, tag }: NoteClientProps) {
   }, [isError]);
 
   useEffect(() => {
-    if (!isLoading && data && data.notes.length === 0 && !noteJustCreated) {
+    if (!isLoading && data && data.notes.length === 0) {
       if (!noNotesToastShown.current) {
         showErrorToast("No notes found for your request.");
         noNotesToastShown.current = true;
@@ -75,10 +73,7 @@ export default function NotesClient({ initialData, tag }: NoteClientProps) {
     } else {
       noNotesToastShown.current = false;
     }
-    if (noteJustCreated) {
-      setNoteJustCreated(false);
-    }
-  }, [data, isLoading, noteJustCreated]);
+  }, [data, isLoading]);
 
   return (
     <div className={css.app}>
